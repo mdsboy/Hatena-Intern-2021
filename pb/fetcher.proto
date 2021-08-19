@@ -4,28 +4,13 @@ option go_package = "github.com/hatena/Hatena-Intern-2021/pb/go/fetcher"; // fak
 package fetcher;
 
 service Fetcher {
-  rpc Signup(SignupRequest) returns (SignupReply);
-  rpc Signin(SigninRequest) returns (SigninReply);
+  rpc Fecth(FetchRequest) returns (FetchReply);
 }
 
-// signup
-
-message SignupRequest {
-  string name = 1;
-  string password = 2;
+message FetchRequest {
+  string url = 1;
 }
 
-message SignupReply {
-  string token = 1;
-}
-
-// signup
-
-message SigninRequest {
-  string name = 1;
-  string password = 2;
-}
-
-message SigninReply {
-  string token = 1;
+message FetchReply {
+  string title = 1;
 }
