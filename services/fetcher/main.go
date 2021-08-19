@@ -14,11 +14,10 @@ import (
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	"github.com/hatena/Hatena-Intern-2021/services/renderer-go/config"
-	server "github.com/hatena/Hatena-Intern-2021/services/renderer-go/grpc"
-	"github.com/hatena/Hatena-Intern-2021/services/renderer-go/log"
-	pb "github.com/hatena/Hatena-Intern-2021/services/renderer-go/pb/renderer"
-	pb_fetcher "github.com/hatena/Hatena-Intern-2021/services/renderer-go/pb/fetcher"
+	"github.com/hatena/Hatena-Intern-2021/services/fetcher/config"
+	server "github.com/hatena/Hatena-Intern-2021/services/fetcher/grpc"
+	"github.com/hatena/Hatena-Intern-2021/services/fetcher/log"
+	pb "github.com/hatena/Hatena-Intern-2021/services/fetcher/pb/fetcher"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -47,14 +46,6 @@ func run(args []string) error {
 		_ = logger.Sync()
 	}()
 
-	// 	フェッチ (タイトル取得) サービスに接続
-	fetcherConn, err := grpc.Dial(conf.FetcherAddr, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		return fmt.Errorf("failed to connect to renderer service: %+v", err)
-	}
-	defer fetcherConn.Close()
-	rendererCli := pb_fetcher.NewRendererClient(fetcherConn)
-
 	// サーバーを起動
 	logger.Info(fmt.Sprintf("starting gRPC server (port = %v)", conf.GRPCPort))
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(conf.GRPCPort))
@@ -75,7 +66,7 @@ func run(args []string) error {
 		)),
 	)
 	svr := server.NewServer()
-	pb.RegisterRendererServer(s, svr)
+	pb.RegisterFetcherServer(s, svr)
 	healthpb.RegisterHealthServer(s, svr)
 	go stop(s, conf.GracefulStopTimeout, logger)
 	if err := s.Serve(lis); err != nil {
