@@ -18,6 +18,7 @@ import (
 	server "github.com/hatena/Hatena-Intern-2021/services/renderer-go/grpc"
 	"github.com/hatena/Hatena-Intern-2021/services/renderer-go/log"
 	pb "github.com/hatena/Hatena-Intern-2021/services/renderer-go/pb/renderer"
+	pb_fetcher "github.com/hatena/Hatena-Intern-2021/services/renderer-go/pb/fetcher"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
@@ -45,6 +46,14 @@ func run(args []string) error {
 	defer func() {
 		_ = logger.Sync()
 	}()
+
+	// 	フェッチ (タイトル取得) サービスに接続
+	fetcherConn, err := grpc.Dial(conf.FetcherAddr, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		return fmt.Errorf("failed to connect to renderer service: %+v", err)
+	}
+	defer fetcherConn.Close()
+	rendererCli := pb_fetcher.NewRendererClient(fetcherConn)
 
 	// サーバーを起動
 	logger.Info(fmt.Sprintf("starting gRPC server (port = %v)", conf.GRPCPort))
