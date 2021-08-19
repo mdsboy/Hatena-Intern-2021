@@ -2,8 +2,8 @@
 version: 0.2
 env:
   secrets-manager:
-    DOCKERHUB_USER: arn:aws:secretsmanager:ap-northeast-1:982861970286:secret:dockerhub-3ljH4:username
-    DOCKERHUB_PASS: arn:aws:secretsmanager:ap-northeast-1:982861970286:secret:dockerhub-3ljH4:password
+    DOCKERHUB_USER: arn:aws:secretsmanager:ap-northeast-1:982861970286:secret:dockerhub-3ljH41:username
+    DOCKERHUB_PASS: arn:aws:secretsmanager:ap-northeast-1:982861970286:secret:dockerhub-3ljH41:password
 phases:
   install:
     commands:
